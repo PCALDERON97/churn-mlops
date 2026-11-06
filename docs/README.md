@@ -114,6 +114,7 @@ python -m src.drift.generar_lotes
 python -m src.drift.data_drift data/lotes/lote_mismo_origen.csv   # VERDE
 python -m src.drift.data_drift data/lotes/lote_derivado.csv       # ROJO (código de salida 1)
 python -m src.drift.concept_drift                                 # gráfica docs/figuras/concept_drift.png
+python -m src.drift.calibrar_umbrales                             # justifica los umbrales con lotes normales
 ```
 
 Pruebas automatizadas:

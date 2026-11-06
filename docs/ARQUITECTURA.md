@@ -102,7 +102,7 @@ Para cambiar de versión no se toca código: `python -m src.promover 1` mueve el
 | Numérica | Kolmogórov-Smirnov de dos muestras | p < 0,05 / 19 = 0,0026 | Compara la distribución completa, no solo la media, y no supone normalidad. Con 19 pruebas a la vez, un 0,05 sin corregir daría una falsa alarma en casi 2 de cada 3 lotes (1 − 0,95¹⁹ = 62 %). Bonferroni deja la probabilidad de cualquier falsa alarma en ≤ 5 % |
 | Categórica | PSI (índice de estabilidad poblacional) | PSI > 0,2 | Mide cuánto cambió la proporción de cada categoría. 0,1 y 0,2 son los cortes estándar de la industria (riesgo crediticio): < 0,1 estable, 0,1–0,2 vigilar, > 0,2 cambio significativo |
 
-**Comprobación empírica del umbral:** con 200 lotes limpios de 1.000 clientes del conjunto de prueba hubo 0 falsas alarmas, y el PSI máximo fue 0,011 en el percentil 99, muy lejos de 0,2. Limitación: los 200 lotes se sacan del mismo conjunto de prueba (1.409 clientes), así que se solapan y la estimación de falsas alarmas es optimista.
+**Comprobación empírica del umbral** (`python -m src.drift.calibrar_umbrales`): con 200 lotes limpios de 1.000 clientes hubo 0 falsas alarmas. El PSI máximo fue 0,011 en el percentil 99, muy lejos de 0,2, y el p-valor KS más bajo fue 0,021 en el percentil 1, por encima del umbral de 0,0026. Limitación: los 200 lotes se sacan del mismo conjunto de prueba (1.409 clientes), así que se solapan y la estimación de falsas alarmas es optimista.
 
 **Resultados:**
 
@@ -127,8 +127,8 @@ En el lote derivado, `Contract` dio PSI = 0,11: está en la franja de vigilar pe
 
 **Criterio de reentrenamiento:** la alarma salta si el F1 cae más de un 10 % respecto del F1 de referencia (0,618 → umbral 0,556) **durante 3 lotes seguidos**.
 
-- **Por qué un 10 %:** con 300 lotes normales de 500 clientes, el F1 varía con una desviación estándar de 0,032. El 10 % equivale a 0,062, unas 2 desviaciones, y un lote normal cae por debajo solo por azar el 3,7 % de las veces.
-- **Por qué 3 lotes seguidos:** que 3 lotes normales seguidos caigan por debajo por azar pasa aproximadamente 0,037³ ≈ 0,005 % de las veces. Esperar 3 semanas evita reentrenar por un lote malo, a cambio de detectar el problema 2 semanas más tarde. En este escenario la alarma salta en la semana 8.
+- **Por qué un 10 %** (`python -m src.drift.calibrar_umbrales`, figura `calibracion_f1.png`): en 300 lotes normales de 500 clientes, el F1 varía con una desviación estándar de 0,024. El 10 % equivale a 0,062, unas 2,6 desviaciones, y solo el 0,7 % de los lotes normales cayó por debajo del umbral por azar.
+- **Por qué 3 lotes seguidos:** si un lote normal cae por debajo el 0,7 % de las veces, que caigan 3 seguidos por azar es prácticamente imposible (0,007³, del orden de 1 en 3 millones). Es una estimación gruesa, porque en 300 lotes solo 2 cayeron por debajo, pero muestra que la alarma no salta por casualidad. Esperar 3 semanas evita reentrenar por un lote malo, a cambio de detectar el problema 2 semanas más tarde. En este escenario la alarma salta en la semana 8.
 
 El resultado también queda en MLflow (experimento `churn-monitoreo`), con `f1_lote` por semana como gráfica temporal.
 
