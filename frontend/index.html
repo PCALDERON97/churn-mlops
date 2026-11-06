@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>churn-mlops</title>
+<style>
+  body { font-family: system-ui, sans-serif; max-width: 720px; margin: 24px auto; padding: 0 16px; background: #f7f7f8; color: #222; }
+  h1 { font-size: 1.4rem; margin-bottom: 4px; }
+  .sub { color: #666; margin-top: 0; }
+  form { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; background: #fff; padding: 16px; border-radius: 10px; }
+  label { display: flex; flex-direction: column; font-size: .85rem; gap: 4px; }
+  input, select { padding: 6px; font-size: .95rem; }
+  button { grid-column: 1 / -1; padding: 10px; font-size: 1rem; background: #1f6feb; color: #fff; border: 0; border-radius: 8px; cursor: pointer; }
+  #resultado { margin-top: 16px; padding: 16px; border-radius: 10px; background: #fff; }
+  .alto { border-left: 6px solid #d1242f; } .bajo { border-left: 6px solid #1a7f37; }
+  small { color: #666; }
+</style>
+</head>
+<body>
+<h1>Predicción de churn</h1>
+<p class="sub" id="modelo">Cargando información del modelo…</p>
+<form id="f">
+  <label>Meses como cliente (tenure)<input name="tenure" type="number" value="5" min="0" max="100"></label>
+  <label>Cargo mensual<input name="MonthlyCharges" type="number" value="85" step="0.01"></label>
+  <label>Cargo total<input name="TotalCharges" type="number" value="425" step="0.01"></label>
+  <label>Contrato<select name="Contract"><option>Month-to-month</option><option>One year</option><option>Two year</option></select></label>
+  <label>Internet<select name="InternetService"><option>Fiber optic</option><option>DSL</option><option>No</option></select></label>
+  <label>Soporte técnico<select name="TechSupport"><option>No</option><option>Yes</option><option>No internet service</option></select></label>
+  <label>Seguridad online<select name="OnlineSecurity"><option>No</option><option>Yes</option><option>No internet service</option></select></label>
+  <label>Método de pago<select name="PaymentMethod"><option>Electronic check</option><option>Mailed check</option><option>Bank transfer (automatic)</option><option>Credit card (automatic)</option></select></label>
+  <button type="submit">Predecir</button>
+</form>
+<div id="resultado" hidden></div>
+<script>
+  // La página la sirve la misma API, así que las rutas son relativas al Service de Kubernetes
+  fetch("info").then(r => r.json()).then(i => {
+    document.getElementById("modelo").textContent =
+      `Modelo ${i.modelo} v${i.version} (alias ${i.alias}) · run ${i.run_name}`;
+  });
+  document.getElementById("f").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const datos = Object.fromEntries(new FormData(e.target));
+    for (const k of ["tenure", "MonthlyCharges", "TotalCharges"]) datos[k] = Number(datos[k]);
+    const r = await fetch("predict", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(datos) });
+    const res = await r.json();
+    const div = document.getElementById("resultado");
+    div.hidden = false;
+    div.className = res.churn ? "alto" : "bajo";
+    div.innerHTML = `<strong>${res.churn ? "Riesgo alto de que se vaya" : "Riesgo bajo"}</strong>
+      — probabilidad ${(res.probabilidad * 100).toFixed(1)} %<br>
+      <small>Respondió el pod <b>${res.pod}</b> con el modelo v${res.modelo_version}</small>`;
+  });
+</script>
+</body>
+</html>
