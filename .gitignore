@@ -1,0 +1,12 @@
+# Entorno y cachés
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# MLflow local (se regenera con python -m src.train)
+mlruns/
+mlflow.db
+
+# Modelo exportado para la imagen (se regenera con python -m src.exportar_modelo)
+modelo_servido/

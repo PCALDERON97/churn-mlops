@@ -1,0 +1,10 @@
+.venv/
+mlruns/
+mlflow.db
+data/
+docs/
+tests/
+k8s/
+.git/
+__pycache__/
+*.pyc
