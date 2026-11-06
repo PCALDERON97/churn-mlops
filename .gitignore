@@ -10,3 +10,4 @@ mlflow.db
 
 # Modelo exportado para la imagen (se regenera con python -m src.exportar_modelo)
 modelo_servido/
+GUIA_COMMITS.md
