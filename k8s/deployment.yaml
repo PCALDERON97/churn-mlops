@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: churn-api
+  namespace: churn
+  labels:
+    app: churn-api
+spec:
+  replicas: 3 # alta disponibilidad: 3 copias del servicio
+  selector:
+    matchLabels:
+      app: churn-api
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0 # nunca bajar de 3 pods listos durante una actualización
+  template:
+    metadata:
+      labels:
+        app: churn-api
+    spec:
+      containers:
+        - name: api
+          image: churn-api:v2 # el tag coincide con la versión del Model Registry
+          imagePullPolicy: IfNotPresent # usa la imagen construida localmente
+          ports:
+            - containerPort: 8000
+          env:
+            - name: POD_NAME # el nombre del pod viaja en cada respuesta
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          readinessProbe: # recibe tráfico solo cuando el modelo ya cargó
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe: # si deja de responder, Kubernetes reinicia el contenedor
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 15
+            periodSeconds: 10
