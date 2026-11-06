@@ -156,17 +156,27 @@ Trabajo individual.
 
 ## 9. Evidencias
 
-Las capturas van en `docs/evidencias/`:
+Todas las capturas están en `docs/evidencias/`.
 
-- [x] MLflow: experimento con los 6 runs ordenados por F1
-- [x] MLflow: vista Compare de varios runs
-- [x] MLflow: Model Registry con v1 y v2 y el alias `produccion`
-- [x] `docker run` respondiendo una predicción
-- [x] `kubectl get pods -n churn -o wide` con 3 pods Running
-- [x] `probar_balanceo.ps1` con peticiones repartidas entre pods distintos
-- [x] Autorreparación: pod borrado, pod nuevo y `vigilar_servicio.ps1` sin FALLA
-- [x] Escalado a 5 réplicas y vuelta a 3
-- [x] `pytest -v` todo verde
-- [x] Data drift ROJO con `lote_derivado.csv`
-- [x] Gráfica de concept drift y el experimento `churn-monitoreo` en MLflow
-- [x] Página web desde `localhost:30080` mostrando el pod
+| Evidencia | Archivo |
+|---|---|
+| MLflow: experimento con los 6 runs ordenados por F1 | `01_runs.png` |
+| MLflow: vista Compare de varios runs | `02_compare.png` |
+| MLflow: versiones registradas y su run de origen | `03_modelos_runs.png` |
+| MLflow: Model Registry con v1, v2 y el alias `produccion` | `04_registry.png` |
+| MLflow: detalle del run desplegado (parámetros, métricas, run_id) | `05_run_detalle.png` |
+| Docker: construcción de la imagen `churn-api:v2` | `06_docker_build.png`, `07_docker_image_build.png` |
+| Docker: contenedor corriendo | `08_docker_run.png` |
+| Docker: predicción desde el contenedor | `09_docker_prediccion.png`, `10_swagger_predict.png` |
+| Kubernetes: 3 pods Running | `11_tres_replicas.png` |
+| Kubernetes: balanceo entre pods distintos | `12_balanceo.png` |
+| Kubernetes: autorreparación sin corte del servicio | `13_autorreparacion.png` |
+| Kubernetes: escalado a 5 réplicas y vuelta a 3 | `14_escalado_5.png`, `15_escalado_3.png` |
+| Interfaz web consumiendo el clúster (`localhost:30080`) | `16_web_cluster.png` |
+| Data drift VERDE con datos del mismo origen | `17_data_drift_verde.png` |
+| Data drift ROJO con datos derivados | `18_data_drift_rojo.png`, `19_graficas_data_drift.png` |
+| Concept drift: F1 por semana y alarma de reentrenamiento | `20_concept_drift_tabla.png`, `21_concept_drift_grafica.png` |
+| Concept drift registrado en MLflow (`churn-monitoreo`) | `22_mlflow_monitoreo.png` |
+| Pruebas automatizadas: `pytest -v` todo verde | `23_pytest_verde.png` |
+| Prueba del lote derivado en ROJO | `24_pytest_rojo.png` |
+| Calibración de umbrales con lotes normales | `25_calibracion_umbrales.png` |
